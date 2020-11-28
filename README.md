@@ -1,5 +1,5 @@
 # Data Science Tools
-This is a dump of all the tools I think I've recommended at various times throughout the course. Let me know if I've forgotten anything and I'll add it on. Or even better, update the document and submit a pull request :sparkles:
+This is a dump of all the tools I've recommended throughout the course. Let me know if I've forgotten anything and I'll add it somewhere. Or even better, update the document and submit a pull request :sparkles:
 
 ## Development Environment
 ### [WSL](https://ubuntu.com/wsl)
