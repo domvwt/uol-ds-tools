@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-echo "Executing mapreduce script..."
-echo
-
 INPUT_DIR="../data/raw/200704/"
 INPUT_FILE="200704hourly.txt"
 
+echo "Executing mapreduce script..."
 echo "Started: `date -u +"%Y-%m-%d--%H%M"`"
 echo
 
@@ -25,10 +23,18 @@ app_id=`python appid.py`
 # Give yarn a chance to collect the logs
 sleep 5
 
-# Collect executor logs from yarn
+# Get the executor logs from yarn
 yarn logs -applicationId "${app_id}" > nice_logs.txt
 
-# Print any Python errors from nice_logs.txt
-grep -A 10 -m 1 Traceback nice_logs.txt
+# Print any errors from nice_logs.txt
+pyerrors=`python get-pyerrors.py`
+if [ ! -z pyerrors ]; then
+    echo
+    echo -e "\e[31mPython errors found:\e[0m"
+    echo -e "$pyerrors"
+    echo
+    echo -e "\e[31mEnd of Python errors.\e[0m"
+    echo
+fi
 
 echo "Finished: `date -u +"%Y-%m-%d--%H%M"`"
