@@ -24,8 +24,8 @@ If you're using WSL you'll want to [try the WSL extension](https://code.visualst
 
 Terminal manager
 
-* Tabs
-* Panes
+* Tabs (contol + shift + d)
+* Panes (alt + shift + d)
 * [Customisation](https://blogs.windows.com/windowsdeveloper/2020/06/30/3-ways-to-customize-your-windows-terminal/)
 
 ### [GitKraken](https://www.gitkraken.com/)
