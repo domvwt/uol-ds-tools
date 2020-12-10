@@ -18,7 +18,7 @@ hadoop jar /opt/hadoop/current/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar
 2>&1 | tee logs.txt \
 && hdfs dfs -copyToLocal output
 
-app_id=`python appid.py`
+app_id=`python get-app-id.py`
 
 # Give yarn a chance to collect the logs
 sleep 5
