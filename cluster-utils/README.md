@@ -9,3 +9,7 @@
 ## `appid.py`
 
 * Script for grabbing the application id from yarn logs.
+
+## `get-pyerrors.py`
+
+* Fetch Python stack errors from the yarn log file.
