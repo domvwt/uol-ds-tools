@@ -28,7 +28,7 @@ yarn logs -applicationId "${app_id}" > nice_logs.txt
 
 # Print any errors from nice_logs.txt
 pyerrors=`python get-pyerrors.py`
-if [ ! -z pyerrors ]; then
+if [ ! -z "$pyerrors" ]; then
     echo
     echo -e "\e[31mPython errors found:\e[0m"
     echo -e "$pyerrors"
