@@ -1,22 +1,25 @@
 #!/usr/bin/env bash
 INPUT_DIR="../data/raw/200704/"
 INPUT_FILE="200704hourly.txt"
+OUTPUT_DIR="output"
+MAPPER_SCRIPT="mapper.py"
+REDUCER_SCRIPT="reducer.py"
 
 echo "Executing mapreduce script..."
 echo "Started: `date -u +"%Y-%m-%d--%H%M"`"
 echo
 
 hdfs dfs -copyFromLocal "${INPUT_DIR}${INPUT_FILE}"
-hdfs dfs -rm -r output
-rm -rf output
+hdfs dfs -rm -r ${OUTPUT_DIR}
+rm -rf ${OUTPUT_DIR}
 
 hadoop jar /opt/hadoop/current/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar \
-  -file mapper.py -mapper mapper.py \
-  -file reducer.py -reducer reducer.py \
+  -file ${MAPPER_SCRIPT} -mapper ${MAPPER_SCRIPT} \
+  -file ${REDUCER_SCRIPT} -reducer ${REDUCER_SCRIPT} \
   -input ${INPUT_FILE} \
-  -output output \
+  -output ${OUTPUT_DIR} \
 2>&1 | tee logs.txt \
-&& hdfs dfs -copyToLocal output
+&& hdfs dfs -copyToLocal ${OUTPUT_DIR}
 
 app_id=`python get-app-id.py`
 
