@@ -10,11 +10,11 @@ hdfs dfs -copyFromLocal "${INPUT_DIR}${INPUT_FILE}"
 hdfs dfs -rm -r output
 rm -rf output
 
-(hadoop jar /opt/hadoop/current/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar \
+hadoop jar /opt/hadoop/current/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar \
   -file mapper.py -mapper mapper.py \
   -file reducer.py -reducer reducer.py \
   -input ${INPUT_FILE} \
-  -output output) \
+  -output output \
 2>&1 | tee logs.txt \
 && hdfs dfs -copyToLocal output
 
