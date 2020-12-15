@@ -1,4 +1,4 @@
-# Cluster Utilities
+# Mapreduce Utilities
 
 ## Usage
 
