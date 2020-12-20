@@ -67,12 +67,32 @@ def clean_hdfs(input_name):
     return f"hdfs dfs -rm -r {input_name}"
 
 
+def get_final_clusters(kmeans_output):
+    result = subprocess.run(
+        f"hdfs dfs -ls {kmeans_output}".split(), capture_output=True,
+    )
+    return str(result.stdout.split()[-1], encoding="utf-8")
+
+
 def get_centroids(input_name, distance_metric, t1, t2, output):
     return f"""\
 mahout canopy -i {input_name}/vectors/tfidf-vectors -ow \
 -o {output} \
 -dm org.apache.mahout.common.distance.{distance_metric} \
 -t1 {t1} -t2 {t2}
+"""
+
+
+def run_kmeans_canopy(input_name, distance_metric, output):
+    final_clusters = get_final_clusters(
+        f"{input_name}/canopy-centroids-{distance_metric}"
+    )
+    return f"""\
+mahout kmeans -i {input_name}/vectors/tfidf-vectors \
+-c {final_clusters} \
+-o hdfs://lena/user/{_USER}/{output} \
+-dm org.apache.mahout.common.distance.{distance_metric} \
+-cl -cd 0.1 -ow -x 20
 """
 
 
@@ -86,19 +106,12 @@ mahout kmeans -i {input_name}/vectors/tfidf-vectors \
 """
 
 
-def get_final_clusters(input_name, k, distance_metric, kmeans_output):
-    result = subprocess.run(
-        f"hdfs dfs -ls {kmeans_output}".split(), capture_output=True,
-    )
-    return str(result.stdout.split()[-1], encoding="utf-8")
-
-
 def get_cluster_info(
     input_name, k, distance_metric, kmeans_output, output_dir, output_format
 ):
     ext = output_format.replace("_", "").lower()
     ext = "txt" if ext == "text" else ext
-    final_clusters = get_final_clusters(input_name, k, distance_metric, kmeans_output)
+    final_clusters = get_final_clusters(kmeans_output)
     return f"""\
 mahout clusterdump \
 -i {final_clusters} \
@@ -130,6 +143,11 @@ def main():
         "--force-centroids",
         action="store_true",
         help="rerun and overwrite centroid files that already exist",
+    )
+    argparser.add_argument(
+        "--force-canopy-eval",
+        action="store_true",
+        help="rerun and overwrite canopy cluster evaluation files that already exist",
     )
     argparser.add_argument(
         "--force-kmeans",
@@ -186,11 +204,53 @@ def main():
 
     for conf in run_configs:
         centroid_output = f"{input_name}/canopy-centroids-{conf.distance_metric}"
+        canopy_output = f"{input_name}/kmeans-clusters-canopy-{conf.distance_metric}"
         if not is_hdfs_file(centroid_output) or args.force_centroids:
             run_command(
                 f"get_centroids, dm: {conf.distance_metric}",
                 get_centroids(
                     input_name, conf.distance_metric, conf.t1, conf.t2, centroid_output
+                ),
+                args.interact,
+            )
+        if not is_hdfs_file(canopy_output) or args.force_centroids:
+            run_command(
+                f"run_kmeans_canopy, dm: {conf.distance_metric}",
+                run_kmeans_canopy(input_name, conf.distance_metric, canopy_output),
+                args.interact,
+            )
+        canopy_eval_output_txt = Path(
+            f"{output_dir}/{input_name}-eval-txt/clusters-canopy-{conf.distance_metric}.txt"
+        )
+        if not canopy_eval_output_txt.is_file() or args.force_canopy_eval:
+            canopy_eval_output_txt.parent.mkdir(parents=True, exist_ok=True)
+            run_command(
+                f"get_cluster_info: txt, dm: {conf.distance_metric}, k: canopy",
+                get_cluster_info(
+                    input_name,
+                    "canopy",
+                    conf.distance_metric,
+                    canopy_output,
+                    output_dir,
+                    "TEXT",
+                ),
+                args.interact,
+            )
+
+        canopy_eval_output_csv = Path(
+            f"{output_dir}/{input_name}-eval-csv/clusters-canopy-{conf.distance_metric}.csv"
+        )
+        if not canopy_eval_output_csv.is_file() or args.force_canopy_eval:
+            canopy_eval_output_csv.parent.mkdir(parents=True, exist_ok=True)
+            run_command(
+                f"get_cluster_info: csv, dm: {conf.distance_metric}, k: canopy",
+                get_cluster_info(
+                    input_name,
+                    "canopy",
+                    conf.distance_metric,
+                    canopy_output,
+                    output_dir,
+                    "CSV",
                 ),
                 args.interact,
             )
