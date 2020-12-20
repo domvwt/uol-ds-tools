@@ -22,10 +22,13 @@ positional arguments:
   conf               config file for choosing kmeans parameters
 
 optional arguments:
-  -h, --help         show this help message and exit
-  --force-upload     rerun and overwrite raw files that already exist
-  --force-centroids  rerun and overwrite centroid files that already exist
-  --force-kmeans     rerun and overwrite cluster files that already exist
-  --force-eval       rerun and overwrite evaluation files that already exist
-  -i, --interactive  user prompt on task failure
+optional arguments:
+  -h, --help           show this help message and exit
+  --force-upload       rerun and overwrite raw files that already exist
+  --force-centroids    rerun and overwrite centroid files that already exist
+  --force-canopy-eval  rerun and overwrite canopy cluster evaluation files that already
+                       exist
+  --force-kmeans       rerun and overwrite cluster files that already exist
+  --force-eval         rerun and overwrite evaluation files that already exist
+  -i, --interactive    user prompt on task failure
   ```
