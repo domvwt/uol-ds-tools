@@ -22,7 +22,6 @@ positional arguments:
   conf               config file for choosing kmeans parameters
 
 optional arguments:
-optional arguments:
   -h, --help           show this help message and exit
   --force-upload       rerun and overwrite raw files that already exist
   --force-centroids    rerun and overwrite centroid files that already exist
