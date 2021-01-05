@@ -72,7 +72,11 @@ def get_final_clusters(kmeans_output):
     result = subprocess.run(
         f"hdfs dfs -ls {kmeans_output}".split(), capture_output=True,
     )
-    return str(result.stdout.split()[-1], encoding="utf-8")
+    result_list = result.stdout.split()
+    if result_list:
+        return str(result_list[-1], encoding="utf-8")
+    else:
+        print(f"No clusters found at {kmeans_output}!!")
 
 
 def get_centroids(input_name, distance_metric, t1, t2, output):
