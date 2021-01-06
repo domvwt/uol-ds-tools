@@ -74,9 +74,11 @@ def get_final_clusters(kmeans_output):
     )
     result_list = result.stdout.split()
     if result_list:
-        return str(result_list[-1], encoding="utf-8")
+        result_str = str(result_list[-1], encoding="utf-8")
     else:
-        print(f"No clusters found at {kmeans_output}!!")
+        print(f"WARN: No clusters found at {kmeans_output}!!")
+        result_str = ""
+    return result_str
 
 
 def get_centroids(input_name, distance_metric, t1, t2, output):
@@ -104,6 +106,7 @@ mahout kmeans -i {input_name}/vectors/tfidf-vectors \
 def run_kmeans(input_name, k, distance_metric, output):
     return f"""\
 mahout kmeans -i {input_name}/vectors/tfidf-vectors \
+-c {input_name}/kmeans-centroids-{k}-{distance_metric} \
 -o hdfs://lena/user/{_USER}/{output} \
 -dm org.apache.mahout.common.distance.{distance_metric} \
 -cl -cd 0.1 -ow -x 20 -k {k}
@@ -162,6 +165,11 @@ def main():
         "--force-eval",
         action="store_true",
         help="rerun and overwrite evaluation files that already exist",
+    )
+    argparser.add_argument(
+        "--skip-canopy",
+        action="store_true",
+        help="skip canopy clustering and evaluation",
     )
     argparser.add_argument(
         "-i",
@@ -226,7 +234,7 @@ def main():
         canopy_eval_output_csv = Path(
             f"{output_dir}/{input_name}-eval-csv/clusters-canopy-{conf.distance_metric}.csv"
         )
-        if not canopy_eval_output_csv.is_file() or args.force_canopy_eval:
+        if (not canopy_eval_output_csv.is_file() or args.force_canopy_eval) and not args.skip_canopy:
             canopy_eval_output_csv.parent.mkdir(parents=True, exist_ok=True)
             run_command(
                 f"get_cluster_info: csv, dm: {conf.distance_metric}, k: canopy",
@@ -243,7 +251,7 @@ def main():
         canopy_eval_output_txt = Path(
             f"{output_dir}/{input_name}-eval-txt/clusters-canopy-{conf.distance_metric}.txt"
         )
-        if not canopy_eval_output_txt.is_file() or args.force_canopy_eval:
+        if (not canopy_eval_output_txt.is_file() or args.force_canopy_eval) and not args.skip_canopy:
             canopy_eval_output_txt.parent.mkdir(parents=True, exist_ok=True)
             run_command(
                 f"get_cluster_info: txt, dm: {conf.distance_metric}, k: canopy",
