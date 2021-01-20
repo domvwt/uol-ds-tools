@@ -3,10 +3,10 @@ import re
 from pathlib import Path
 
 
-INPUT_TXT = "frankenstein.txt"
+INPUT_TXT = "~/uol-ds-tools/pyspark-utils/frankenstein.txt"
 
 
-myfile = Path(INPUT_TXT).absolute()
+myfile = Path(INPUT_TXT).expanduser().absolute()
 rdd_txt = sc.textFile(f"file:///{myfile}")
 
 # Simple word counts splitting on whitespace
