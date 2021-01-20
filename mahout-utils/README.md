@@ -28,5 +28,6 @@ optional arguments:
   --force-canopy-eval  rerun and overwrite canopy cluster evaluation files that already exist
   --force-kmeans       rerun and overwrite cluster files that already exist
   --force-eval         rerun and overwrite evaluation files that already exist
+  --skip-canopy        skip canopy clustering and evaluation
   -i, --interactive    user prompt on task failure
   ```
