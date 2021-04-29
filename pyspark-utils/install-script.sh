@@ -15,12 +15,12 @@ if ! test -d "/opt/spark"; then
   sudo apt-get update -y && \
   sudo apt-get install openjdk-8-jre -y && \
   echo "Downloading Spark..." && \
-  wget --quiet https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
+  wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
   tar -xf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
   echo "Installing Python..." && \
   sudo apt-get install ipython3 python3-pip -y && \
   echo "Installing Python libs..." && \
-  pip install -Uqq pyspark==${SPARK_VERSION} && \
+  pip install pyspark==${SPARK_VERSION} && \
   sudo mv spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} /opt/spark  && \
   rm -rf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
   echo 'export SPARK_HOME=/opt/spark' >> ~/.bash_profile && \
